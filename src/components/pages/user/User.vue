@@ -121,6 +121,20 @@
           </v-data-table>
         </v-expansion-panel-content>
       </v-expansion-panel>
+
+      <v-expansion-panel>
+        <v-expansion-panel-header>
+          <span class="text-h6">Usernames' history</span>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <div class="d-flex my-4">
+            <h4>Current username:</h4>
+            <span class="mx-2">{{ user.username }}</span>
+          </div>
+
+          <v-data-table :headers="usernamesHeaders" :items="usernamesItems"> </v-data-table>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
     </v-expansion-panels>
 
     <!-- ACTIVITY -->
@@ -201,6 +215,23 @@ export default class Users extends Vue {
     ];
   }
 
+  get usernamesHeaders() {
+    return [
+      {
+        text: "From",
+        value: "from",
+      },
+      {
+        text: "To",
+        value: "to",
+      },
+      {
+        text: "Useraname",
+        value: "username",
+      },
+    ];
+  }
+
   get blocksItems() {
     return this.user?.blocks?.history
       ? this.user.blocks.history.map((val) => ({
@@ -209,6 +240,14 @@ export default class Users extends Vue {
           blocks: val.blocks,
         }))
       : [];
+  }
+
+  get usernamesItems() {
+    return this.user?.usernames_history ? this.user.usernames_history.map((val) => ({
+          from: val.from ? new Date(val.from).toLocaleDateString() : "ORIGIN",
+          to: val.to ? new Date(val.to).toLocaleDateString() : "NOW",
+          username: val.username,
+        })) : [];
   }
 
   // get namespaces() {
@@ -295,7 +334,10 @@ export default class Users extends Vue {
         }
       }
 
-      Plotly.newPlot(this.graphElement, Object.keys(traces).map(key => traces[key]));
+      Plotly.newPlot(
+        this.graphElement,
+        Object.keys(traces).map((key) => traces[key])
+      );
     }
   }
 

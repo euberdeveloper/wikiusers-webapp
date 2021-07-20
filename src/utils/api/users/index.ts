@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { handleError } from '../utils';
 
-const API_ROUTE = `http://localhost:3000`;
+const API_ROUTE = process.env.VUE_APP_API_URL ?? `http://localhost:3000`;
 
 export interface PartialUser {
   id: number;

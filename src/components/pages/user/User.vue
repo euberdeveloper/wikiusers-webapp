@@ -211,6 +211,10 @@ export default class Users extends Vue {
       : [];
   }
 
+  // get namespaces() {
+  //   return this.user.activity.total.per_namespace
+  // }
+
   /* WATCHERS */
 
   @Watch("user", { deep: true })
@@ -226,30 +230,72 @@ export default class Users extends Vue {
 
   renderActivity(): void {
     if (this.graphElement && this.user) {
-      const xValues: Date[] = [];
-      const yValues: number[] = [];
+      const traces = {
+        total: {
+          x: [],
+          y: [],
+          mode: "lines",
+          name: "Total",
+        },
+        edit: {
+          x: [],
+          y: [],
+          mode: "lines",
+          name: "Edits",
+        },
+        create: {
+          x: [],
+          y: [],
+          mode: "lines",
+          name: "Creates",
+        },
+        delete: {
+          x: [],
+          y: [],
+          mode: "lines",
+          name: "Deletions",
+        },
+        restore: {
+          x: [],
+          y: [],
+          mode: "lines",
+          name: "Restores",
+        },
+        move: {
+          x: [],
+          y: [],
+          mode: "lines",
+          name: "Moves",
+        },
+        merge: {
+          x: [],
+          y: [],
+          mode: "lines",
+          name: "Merges",
+        },
+        minor_edit: {
+          x: [],
+          y: [],
+          mode: "lines",
+          name: "Minor edits",
+        },
+      };
 
       for (const year of Object.keys(this.user.activity.per_month).sort()) {
         const yearObj = this.user.activity.per_month[year];
 
         for (const month of Object.keys(yearObj).sort()) {
           const monthObj = yearObj[month];
-
           const xValue = new Date(+year, +month - 1, 1);
-          xValues.push(xValue);
-
-          const yValue = +monthObj.events.total.total;
-          yValues.push(yValue);
+          for (const key in monthObj.events.total) {
+            const yValue = +monthObj.events.total[key];
+            traces[key].x.push(xValue);
+            traces[key].y.push(yValue);
+          }
         }
       }
 
-      Plotly.newPlot(this.graphElement, [
-        {
-          x: xValues,
-          y: yValues,
-          type: "scatter",
-        },
-      ]);
+      Plotly.newPlot(this.graphElement, Object.keys(traces).map(key => traces[key]));
     }
   }
 

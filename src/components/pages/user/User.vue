@@ -138,6 +138,7 @@
     </v-expansion-panels>
 
     <!-- ACTIVITY -->
+    <v-select v-model="selectedNamespace" class="mx-5 mt-5" label="Namespace" :items="namespaces" clearable single-line />
     <div class="graph" ref="graph" />
   </v-card>
 </template>
@@ -168,6 +169,7 @@ export default class Users extends Vue {
 
   private user: any = null;
   private detailsExpanded = 0;
+  private selectedNamespace: string | null = null;
 
   /* GETTERS */
 
@@ -243,21 +245,28 @@ export default class Users extends Vue {
   }
 
   get usernamesItems() {
-    return this.user?.usernames_history ? this.user.usernames_history.map((val) => ({
+    return this.user?.usernames_history
+      ? this.user.usernames_history.map((val) => ({
           from: val.from ? new Date(val.from).toLocaleDateString() : "ORIGIN",
           to: val.to ? new Date(val.to).toLocaleDateString() : "NOW",
           username: val.username,
-        })) : [];
+        }))
+      : [];
   }
 
-  // get namespaces() {
-  //   return this.user.activity.total.per_namespace
-  // }
+  get namespaces(): string[] {
+    return this.user?.activity?.total?.events?.per_namespace ? Object.keys(this.user?.activity?.total?.events?.per_namespace) : [];
+  }
 
   /* WATCHERS */
 
   @Watch("user", { deep: true })
   watchUser() {
+    this.renderActivity();
+  }
+
+  @Watch("selectedNamespace", { deep: true })
+  watchNamespace() {
     this.renderActivity();
   }
 
@@ -326,10 +335,14 @@ export default class Users extends Vue {
         for (const month of Object.keys(yearObj).sort()) {
           const monthObj = yearObj[month];
           const xValue = new Date(+year, +month - 1, 1);
-          for (const key in monthObj.events.total) {
-            const yValue = +monthObj.events.total[key];
-            traces[key].x.push(xValue);
-            traces[key].y.push(yValue);
+
+          const eventsObj = this.selectedNamespace ? monthObj.events.per_namespace[this.selectedNamespace] : monthObj.events.total;
+          if (eventsObj) {
+            for (const key in eventsObj) {
+              const yValue = +eventsObj[key];
+              traces[key].x.push(xValue);
+              traces[key].y.push(yValue);
+            }
           }
         }
       }

@@ -255,7 +255,7 @@ export default class Users extends Vue {
   }
 
   get namespaces(): string[] {
-    return this.user?.activity?.total?.events?.per_namespace ? Object.keys(this.user?.activity?.total?.events?.per_namespace) : [];
+    return this.user?.activity?.total?.events?.per_namespace ? Object.keys(this.user?.activity?.total?.events?.per_namespace).sort() : [];
   }
 
   /* WATCHERS */

@@ -21,6 +21,7 @@
 import Vue from 'vue';
 import { Component } from "vue-property-decorator";
 import { MutationTypes } from "@/store";
+import { getLangs } from '@/utils/api';
 
 export interface MenuItem {
   icon?: string;
@@ -33,31 +34,7 @@ export default class WikiusersMenu extends Vue {
   /* DATA */
 
   private tab = 0;
-
-  /* DATA */
-
-  private items: MenuItem[] = [
-    {
-      // icon: "mdi-account-group",
-      text: "Italian",
-      path: "/it",
-    },
-    {
-      // icon: "mdi-bed",
-      text: "Catalan",
-      path: "/ca",
-    },
-    {
-      // icon: "mdi-file-document-edit",
-      text: "Spanish",
-      path: "/es",
-    },
-    {
-      // icon: "mdi-file-document-edit",
-      text: "English",
-      path: "/en",
-    },
-  ];
+  private items: MenuItem[] = [];
 
   /* COMPUTED */
 
@@ -66,6 +43,16 @@ export default class WikiusersMenu extends Vue {
   }
   set showMenu(value: boolean) {
     this.$store.commit(MutationTypes.SET_SHOW_MENU, value);
+  }
+
+  /* LIFE CYCLE */
+
+  async mounted() {
+    const langs = await getLangs();
+    this.items = langs.map(lang => ({
+      text: `${lang}wiki`,
+      path: `/${lang}`
+    }));
   }
 
 }

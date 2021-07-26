@@ -1,5 +1,6 @@
 FROM node:lts-alpine
 WORKDIR /app
+ENV VUE_APP_API_URL=/api
 COPY package*.json ./
 RUN npm install
 COPY . .

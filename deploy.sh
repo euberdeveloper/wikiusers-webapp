@@ -1,14 +1,6 @@
 #!/bin/bash
 
-echo "Build site"
-npm install
-npm run build
-rm -rf node_modules
-
-echo "Removing any pre-existing static file"
-cd site
-rm -rf *
-cd ..
-
-echo "Passing all the new static files from dist to site"
+cd site 
+rm -rf * 
+cd .. 
 cp dist/* site -rf
